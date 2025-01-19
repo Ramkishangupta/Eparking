@@ -1,5 +1,6 @@
 const express = require('express');
 const Slot = require('../models/Slot');
+const saveToExcel = require('../helpers/excelHelper'); 
 const router = express.Router();
 
 // Get all parking slots
@@ -31,13 +32,16 @@ router.post('/update', async (req, res) => {
             return res.status(404).json({ message: 'Slot not found' });
         }
 
+        // Save the updated data to Excel
+        await saveToExcel();
+
         res.status(200).json({ message: `Slot ${slotNumber} updated to ${status}`, slot });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-
+// Add a new parking slot
 router.post('/add', async (req, res) => {
     const { slotNumber } = req.body;
 
@@ -49,6 +53,9 @@ router.post('/add', async (req, res) => {
 
         const newSlot = new Slot({ slotNumber });
         await newSlot.save();
+
+        // Save the new data to Excel
+        await saveToExcel();
 
         res.status(201).json({ message: 'Slot added successfully', slot: newSlot });
     } catch (error) {
