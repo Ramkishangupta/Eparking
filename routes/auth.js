@@ -43,10 +43,28 @@ router.post('/login', async (req, res) => {
         // Generate JWT
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.status(200).json({ token, message: 'Login successful' });
+        res.status(200).json({ token,id,message: 'Login successful' });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error });
     }
 });
+
+router.post('/details', async (req, res) => {
+    const { id } = req.body; // Expecting id in the body of the request
+
+    try {
+        // Fetch user details by id
+        const user = await User.findOne({ id });
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Exclude password from the response
+        const { password, ...userDetails } = user._doc;
+
+        res.status(200).json(userDetails);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching user details', error });
+    }
+});
+
 
 module.exports = router;
