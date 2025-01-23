@@ -1,6 +1,7 @@
 const express = require('express');
 const Slot = require('../models/Slot');
 const saveToExcel = require('../helpers/excelHelper'); 
+const saveToExcel = require('../helpers/excelHelper'); 
 const router = express.Router();
 
 // Get all parking slots
@@ -25,6 +26,12 @@ router.post('/update', async (req, res) => {
             return res.status(404).json({ message: 'Slot not found' });
         }
 
+        // Save the updated data to Excel
+        await saveToExcel();
+
+        // Save the updated data to Excel
+        await saveToExcel();
+
         // Toggle the status
         const newStatus = slot.status === 'occupied' ? 'unoccupied' : 'occupied';
 
@@ -41,7 +48,7 @@ router.post('/update', async (req, res) => {
     }
 });
 
-
+// Add a new parking slot
 // Add a new parking slot
 router.post('/add', async (req, res) => {
     const { slotNumber } = req.body;
@@ -54,6 +61,9 @@ router.post('/add', async (req, res) => {
 
         const newSlot = new Slot({ slotNumber });
         await newSlot.save();
+
+        // Save the new data to Excel
+        await saveToExcel();
 
         // Save the new data to Excel
         await saveToExcel();
